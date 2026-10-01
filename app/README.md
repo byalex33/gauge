@@ -1,6 +1,6 @@
 # Gauge for Mac
 
-A native SwiftUI system monitor for macOS 26 and later.
+A native SwiftUI system monitor for macOS 26 and later, with signed in-app updates via Sparkle.
 
 ## Build
 
@@ -10,6 +10,20 @@ Requires the Xcode command line tools (Swift 6.2+).
 ./build.sh          # builds build/Gauge.app
 ./build.sh --open   # builds and launches it
 ```
+
+## Releasing
+
+```bash
+# 1. Write release-notes/<version>.md (one "- " bullet per line)
+# 2. Build the DMG, sign the update and add it to website/public/appcast.xml
+./release.sh 0.3.0
+# 3. Publish: GitHub release with the DMG, then commit and push the appcast (Vercel deploys it)
+./release.sh 0.3.0 --publish
+```
+
+- The version and build number live in `VERSION.env`. Sparkle compares the build number, so every release increments it.
+- Updates are signed with an EdDSA key stored in the login Keychain under the account `gauge`. The public half is `SUPublicEDKey` in `Resources/Info.plist`. Back up the private key (`.build/artifacts/sparkle/Sparkle/bin/generate_keys --account gauge -x gauge-sparkle-key`): without it, existing installs can't accept updates.
+- With an Apple Developer ID, set `GAUGE_SIGN_IDENTITY="Developer ID Application: …"` and `GAUGE_NOTARY_PROFILE=<notarytool profile>` to sign with the hardened runtime, notarize and staple.
 
 ## What it reads
 
@@ -32,7 +46,8 @@ Temperature and fan sensors are not read yet; they need a privileged helper.
 ## History stays on your Mac
 
 Readings are averaged every 10 seconds into a SQLite file at
-`~/Library/Application Support/Gauge/history.sqlite`. Gauge makes no network connections.
+`~/Library/Application Support/Gauge/history.sqlite` and never uploaded. The only network request is
+Sparkle's opt-in update check of `https://gauge.alex.codes/appcast.xml`, with system profiling off.
 Retention (1–90 days) and Clear History are in Settings.
 
 ## Screenshots without screen recording

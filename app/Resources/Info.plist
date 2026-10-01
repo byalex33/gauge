@@ -16,5 +16,10 @@
 	<key>LSMinimumSystemVersion</key><string>26.0</string>
 	<key>NSHighResolutionCapable</key><true/>
 	<key>NSHumanReadableCopyright</key><string>Gauge · History stays on your Mac.</string>
+	<key>SUFeedURL</key><string>https://gauge.alex.codes/appcast.xml</string>
+	<key>SUPublicEDKey</key><string>bGQggwpj9kjTRYcLLkW8Mpuywjy+cE10yXV8xNZ4VGo=</string>
+	<key>SUEnableSystemProfiling</key><false/>
+	<key>SUScheduledCheckInterval</key><integer>86400</integer>
+	<key>SUVerifyUpdateBeforeExtraction</key><true/>
 </dict>
 </plist>

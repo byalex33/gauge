@@ -17,7 +17,7 @@ struct HistoryPoint: Identifiable, Hashable {
 }
 
 /// Local SQLite history in ~/Library/Application Support/Gauge.
-/// History stays on this Mac: the store has no network code and nothing syncs it.
+/// History stays on this Mac: nothing reads this file except Gauge, and nothing syncs or uploads it.
 final class HistoryStore: @unchecked Sendable {
     static let folder: URL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         .appendingPathComponent("Gauge", isDirectory: true)

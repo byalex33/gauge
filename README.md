@@ -11,10 +11,10 @@ Native SwiftUI. Live readings. History stays on your Mac.
 <a href="https://swift.org"><img src="docs/badges/swift.svg" alt="Swift 6.2"></a>
 <a href="app/Sources/Gauge"><img src="docs/badges/swiftui.svg" alt="SwiftUI and Swift Charts"></a>
 <a href="#history-stays-on-your-mac"><img src="docs/badges/local.svg" alt="History stays on your Mac"></a>
-<a href="#history-stays-on-your-mac"><img src="docs/badges/network.svg" alt="No network calls"></a>
+<a href="#updates"><img src="docs/badges/network.svg" alt="Updates: signed and opt-in"></a>
 <a href="LICENSE"><img src="docs/badges/license.svg" alt="MIT license"></a>
 
-[Features](#features) · [Screenshots](#a-closer-look) · [What it measures](#what-it-measures) · [Privacy](#history-stays-on-your-mac) · [Build](#build-from-source) · [Roadmap](#roadmap)
+[Download](#install) · [Features](#features) · [Screenshots](#a-closer-look) · [Privacy](#history-stays-on-your-mac) · [Updates](#updates) · [Build](#build-from-source) · [Roadmap](#roadmap)
 
 <br>
 
@@ -25,6 +25,14 @@ Native SwiftUI. Live readings. History stays on your Mac.
 </div>
 
 <br>
+
+## Install
+
+**[Download Gauge for Mac](https://github.com/byalex33/gauge/releases/latest/download/Gauge.dmg)**. It needs macOS 26 or later on Apple silicon.
+
+1. Open `Gauge.dmg` and drag Gauge to Applications.
+2. Open Gauge. Builds aren't notarized yet, so the first time macOS may say it can't verify the developer: go to **System Settings › Privacy & Security** and click **Open Anyway**. You only do this once.
+3. That's it. Gauge offers new versions itself, or use **Gauge › Check for Updates…**.
 
 ## Features
 
@@ -39,6 +47,7 @@ Gauge is built like a measuring instrument rather than a dashboard: six vitals s
 - **Dev-server aware.** Spots Node, Python, Ruby, Bun, Deno and other local servers listening on TCP ports, with the folder each one runs in.
 - **One signal colour.** Orange is reserved for readings that need attention, so a warning never hides among the metric colours.
 - **Feels native.** Floating navigation island, ⌘1–⌘8 shortcuts, Esc to go back, sortable process table, Settings window, and CSV export.
+- **Keeps itself up to date.** Signed updates through Sparkle, only if you allow it.
 
 ## A closer look
 
@@ -85,9 +94,21 @@ Everything comes from public macOS interfaces. Gauge needs no administrator acce
 ## History stays on your Mac
 
 - Readings are averaged every **10 seconds** into a SQLite file at `~/Library/Application Support/Gauge/history.sqlite`.
-- Gauge **makes no network connections**. It has no analytics, no telemetry, no account and no sync.
+- Your history is **never uploaded**. Gauge has no analytics, no telemetry, no account and no sync.
+- The **only network request** is the optional update check described below.
 - Choose how long history is kept (1 to 90 days), reveal the file in Finder, or **Clear History** from Settings (⌘,).
 - Export what's on screen as CSV with **File › Export History** (⌘E).
+
+## Updates
+
+Gauge uses [Sparkle](https://sparkle-project.org) to update itself.
+
+- On the second launch, Gauge **asks** whether to check for updates automatically. You can change this, or check by hand, in Settings and in **Gauge › Check for Updates…**.
+- A check downloads one small feed, [`gauge.alex.codes/appcast.xml`](https://gauge.alex.codes/appcast.xml). Gauge sends **no system profile** and nothing about your Mac.
+
+> [!NOTE]
+> The update feed goes live with the Gauge website. Until then, Check for Updates can't reach it, and new versions are on the [Releases page](https://github.com/byalex33/gauge/releases).
+- Updates are disk images on [GitHub Releases](https://github.com/byalex33/gauge/releases). Each one is signed with an EdDSA key, and Gauge refuses any update whose signature doesn't match the key built into the app.
 
 ## Design
 
@@ -107,7 +128,7 @@ cd gauge/app
 ./build.sh --open
 ```
 
-`build.sh` compiles a release build with Swift Package Manager, assembles `app/build/Gauge.app` with its icon, and signs it ad hoc for local use. There's no notarized download yet.
+`build.sh` compiles a release build with Swift Package Manager, embeds Sparkle, assembles `app/build/Gauge.app` with its icon, and signs it ad hoc for local use. Releases are made with `app/release.sh`; see [`app/README.md`](app/README.md).
 
 ## Keyboard shortcuts
 
@@ -146,9 +167,10 @@ The HTML prototype is the design reference. Open [`prototype/index.html`](protot
 - [x] Per-app usage and dev-server detection
 - [x] Interactive metric pages with saved history
 - [x] Local-only history with retention controls
+- [x] Installable disk image with signed, opt-in updates
+- [ ] Notarized, Developer ID–signed builds
 - [ ] Temperature and fan sensors via a privileged helper
 - [ ] Menu bar extra
-- [ ] Notarized release builds
 - [ ] Desktop widgets
 
 ## License

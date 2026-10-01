@@ -4,6 +4,7 @@ import SwiftUI
 struct GaugeApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var monitor = Monitor()
+    @StateObject private var updates = Updates()
 
     var body: some Scene {
         Window("Gauge", id: "main") {
@@ -17,6 +18,7 @@ struct GaugeApp: App {
         .defaultSize(width: 1280, height: 860)
         .windowToolbarStyle(.unified(showsTitle: false))
         .commands {
+            CommandGroup(after: .appInfo) { CheckForUpdatesCommand(updates: updates) }
             CommandGroup(replacing: .newItem) {}
             CommandGroup(after: .importExport) {
                 Button("Export History…") { NotificationCenter.default.post(name: .gaugeExport, object: nil) }
@@ -25,7 +27,7 @@ struct GaugeApp: App {
         }
 
         Settings {
-            SettingsView()
+            SettingsView(updates: updates)
                 .environment(monitor)
                 .preferredColorScheme(.dark)
         }
@@ -40,6 +42,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 struct SettingsView: View {
+    @ObservedObject var updates: Updates
     @Environment(Monitor.self) private var monitor
     @AppStorage("historyRetentionDays") private var days = 30
     @State private var confirmClear = false
@@ -69,8 +72,9 @@ struct SettingsView: View {
                 Text("History stays on your Mac. Readings are averaged every 10 seconds and older entries are removed automatically.")
                     .foregroundStyle(.secondary)
             }
+            UpdatesSettings(updates: updates)
             Section("Privacy") {
-                Text("Gauge reads system counters locally. It makes no network connections, has no analytics and needs no account.")
+                Text("Gauge reads system counters locally. It has no analytics, no account and no sync. Its only network request is the update check above.")
                     .foregroundStyle(.secondary)
             }
         }

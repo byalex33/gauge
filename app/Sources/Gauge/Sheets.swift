@@ -51,7 +51,7 @@ struct SheetView: View {
         switch kind {
         case .processes: ProcessesView(apps: monitor.apps)
         case .privacy:
-            Text("Gauge reads system counters on this Mac, such as CPU load, memory, disk and network activity. Readings are saved to a history file in ~/Library/Application Support/Gauge. Nothing is uploaded: Gauge makes no network connections, has no analytics and no account. You can change how long history is kept, or clear it, in Settings.")
+            Text("Gauge reads system counters on this Mac, such as CPU load, memory, disk and network activity. Readings are saved to a history file in ~/Library/Application Support/Gauge and are never uploaded. Gauge has no analytics and no account. Its only network request is the optional update check, which downloads a small feed and sends nothing about your Mac. You can change how long history is kept, clear it, or turn off update checks in Settings.")
                 .font(.system(size: 13.5)).foregroundStyle(Theme.soft).lineSpacing(4)
                 .fixedSize(horizontal: false, vertical: true)
         }
