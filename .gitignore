@@ -1,0 +1,10 @@
+/AGENTS.md
+/CLAUDE.md
+/agents.md
+/claude.md
+/app/.build/
+/app/build/
+.DS_Store
+/.claude/
+*.xcuserstate
+xcuserdata/

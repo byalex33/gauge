@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gauge · Mac overview</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#0f0f0e;
+  --raise:#171715;
+  --raise-2:#1e1e1c;
+  --line:#262624;
+  --line-2:#363632;
+  --ink:#edece6;
+  --soft:#bdbcb4;
+  --muted:#8a8981;
+  --faint:#5c5b55;
+  --signal:#ff6b2c;
+  --cpu:#5aa7ff;--mem:#b08cff;--gpu:#ff7eb6;--disk:#e9be55;--net:#3fd0a8;--bat:#9bd25b;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
+  --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  --gutter:clamp(16px,3.4vw,40px);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+button,select,input{font:inherit;color:inherit}
+button{background:none;border:0;padding:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:1.5px solid var(--ink);outline-offset:3px}
+svg.icon{width:16px;height:16px;stroke:currentColor;stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* Top bar */
+.top{position:sticky;top:0;z-index:30;height:52px;display:flex;align-items:center;gap:18px;padding:0 var(--gutter);background:var(--bg);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:9px;font-weight:600;font-size:14px;letter-spacing:-.01em}
+.brand svg{width:20px;height:20px;stroke:currentColor;stroke-width:2.4;fill:none;stroke-linecap:round}
+.top-meta{font:11px var(--mono);color:var(--muted);padding-left:18px;border-left:1px solid var(--line)}
+.build-link{margin-left:auto;font-size:13px;color:var(--muted)}
+.build-link:hover{color:var(--ink)}
+.icon-btn{width:32px;height:32px;display:grid;place-items:center;border-radius:6px;color:var(--muted)}
+.icon-btn:hover{color:var(--ink);background:var(--raise)}
+
+main{max-width:1320px;margin:0 auto;padding:0 var(--gutter) 150px}
+
+/* Controls */
+.btn{height:32px;display:inline-flex;align-items:center;gap:7px;padding:0 12px;border-radius:6px;border:1px solid var(--line-2);font-size:13px;transition:background .15s,border-color .15s}
+.btn:hover{background:var(--raise);border-color:#46463f}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:var(--bg);font-weight:500}
+.btn.primary:hover{background:#fff}
+.seg{display:inline-flex;gap:2px;padding:2px;border:1px solid var(--line-2);border-radius:7px}
+.seg button{height:26px;min-width:30px;padding:0 10px;border-radius:5px;font-size:12.5px;color:var(--muted);display:grid;place-items:center;transition:color .15s,background .15s}
+.seg button:hover{color:var(--ink)}
+.seg button.active{background:var(--raise-2);color:var(--ink)}
+.seg.icons button{padding:0 7px}
+select{appearance:none;-webkit-appearance:none;height:32px;padding:0 30px 0 12px;border-radius:6px;border:1px solid var(--line-2);font-size:13px;cursor:pointer;background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8981' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E") no-repeat right 9px center/13px}
+select option{background:var(--raise)}
+.textbtn{font-size:13px;color:var(--soft)}
+.textbtn:hover{color:var(--ink)}
+.controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* Title block */
+.intro{display:grid;grid-template-columns:1fr auto;align-items:end;gap:10px 24px;padding:40px 0 30px}
+h1{font-size:30px;font-weight:600;letter-spacing:-.025em;line-height:1.1;margin:0}
+.machine{font-size:13px;color:var(--muted);margin:6px 0 0}
+.status{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:8px 22px;margin:14px 0 0;font-size:13px;color:var(--soft)}
+.status span{display:inline-flex;align-items:center;gap:8px}
+.led{width:7px;height:7px;border-radius:50%;border:1px solid var(--faint);flex-shrink:0}
+.led.on{background:var(--signal);border-color:var(--signal)}
+
+/* Sections */
+.section{margin-top:64px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--line)}
+h2{font-size:15px;font-weight:600;letter-spacing:-.005em;margin:0;display:flex;align-items:baseline;gap:10px}
+h2 .count{font:12px var(--mono);color:var(--muted);font-weight:400}
+.section.first{margin-top:0}
+
+/* Vitals: six channels, like a mixing desk */
+.channels{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border-bottom:1px solid var(--line)}
+.channel{position:relative;container-type:inline-size;min-width:0;padding:18px 20px 22px;border-left:1px solid var(--line);cursor:pointer;outline:none}
+.channel:first-child{border-left:0;padding-left:0}
+.channel:last-child{padding-right:0}
+.channel:focus-visible .ch-name{outline:1.5px solid var(--ink);outline-offset:3px;border-radius:2px}
+.ch-head{display:flex;align-items:center;gap:8px;height:18px}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--tone);flex-shrink:0}
+.ch-name{font-size:13px;font-weight:600}
+.flag{display:inline-flex;align-items:center;gap:6px;font:10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--signal)}
+.flag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--signal)}
+.chev{margin-left:auto;color:var(--faint);transition:color .15s,transform .2s}
+.chev svg{width:14px;height:14px}
+.channel:hover .chev,.channel:focus-visible .chev{color:var(--ink);transform:translateX(2px)}
+.ch-cap{font-size:12px;color:var(--muted);margin-top:2px}
+.readout{display:flex;align-items:baseline;gap:6px;margin:22px 0 14px;font-family:var(--mono);font-weight:300;font-size:clamp(30px,23.5cqi,56px);letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.readout .u{font:400 12px var(--sans);letter-spacing:0;color:var(--muted)}
+.ruler{display:block;width:100%;height:14px;overflow:visible}
+.ruler .track{fill:var(--line-2)}
+.ruler .fill{fill:var(--tone,var(--ink))}
+.ruler .tick{stroke:var(--faint);stroke-width:1}
+.flagged .ruler .fill{fill:var(--signal)}
+.scale{display:flex;justify-content:space-between;font:10px var(--mono);color:var(--faint);margin-top:5px}
+.spark{display:block;width:100%;height:38px;margin:18px 0 16px;overflow:visible}
+.readings{margin:0;font-size:12px}
+.readings div{display:flex;justify-content:space-between;gap:10px;padding:3px 0}
+.readings dt{color:var(--muted)}
+.readings dd{margin:0;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* Worth a look */
+.notice{display:grid;grid-template-columns:7px 92px minmax(0,1fr) auto auto;gap:6px 20px;align-items:start;padding:16px 0;border-bottom:1px solid var(--line)}
+.notice .led{margin-top:6px}
+.notice .cat{font:12px var(--mono);color:var(--tone,var(--muted));padding-top:1px}
+.notice h3{font-size:14px;font-weight:500;margin:0 0 2px}
+.notice p{font-size:13px;color:var(--muted);margin:0}
+.notice .time{font:11px var(--mono);color:var(--faint);padding-top:2px;white-space:nowrap}
+.inspect{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--soft);white-space:nowrap}
+.inspect svg{width:14px;height:14px;transition:transform .2s}
+.inspect:hover{color:var(--ink)}
+.inspect:hover svg{transform:translateX(2px)}
+.empty{padding:28px 0;border-bottom:1px solid var(--line);color:var(--muted);display:flex;gap:16px;flex-wrap:wrap}
+
+/* Right now */
+.breakdowns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.bd{min-width:0;padding:22px 32px 26px 0;border-bottom:1px solid var(--line)}
+.bd:nth-child(2n){padding:22px 0 26px 32px;border-left:1px solid var(--line)}
+.bd-title{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;margin:0 0 18px}
+.bd-title span:not(.dot){font-weight:400;color:var(--muted)}
+.bd-body{display:flex;align-items:center;gap:32px}
+.donut{position:relative;width:132px;height:132px;flex-shrink:0}
+.donut svg{width:100%;height:100%;transform:rotate(-90deg)}
+.donut circle{fill:none;stroke-width:14}
+.donut-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font:300 20px var(--mono);letter-spacing:-.03em}
+.donut-label small{font:11px var(--sans);letter-spacing:0;color:var(--muted);margin-top:3px}
+.legend{flex:1;min-width:0;border-collapse:collapse;font-size:12.5px}
+.legend td{padding:4px 0;white-space:nowrap}
+.legend td:first-child{white-space:normal}
+.legend td+td{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;padding-left:14px}
+.legend td:last-child{color:var(--faint);width:44px}
+.legend i{display:inline-block;width:8px;height:8px;margin-right:9px;vertical-align:0}
+
+/* Hardware */
+.hardware{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-bottom:1px solid var(--line)}
+.hw{min-width:0;padding:22px 28px 24px;border-left:1px solid var(--line)}
+.hw:first-child{border-left:0;padding-left:0}
+.hw:last-child{padding-right:0}
+.hw h3{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;margin:0 0 14px}
+.hw p{font-size:13px;color:var(--muted);margin:12px 0 0;max-width:34ch}
+.hw .readings{font-size:13px}
+.hw .textbtn{display:inline-flex;align-items:center;gap:5px;margin-top:12px}
+.hw .textbtn svg{width:14px;height:14px}
+
+/* Over time */
+.history{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);border-bottom:1px solid var(--line)}
+.history>article{min-width:0;padding:22px 0 26px}
+.history>article+article{padding-left:32px;border-left:1px solid var(--line)}
+.history>article:first-child{padding-right:32px}
+.h-meta{font-size:13px;color:var(--muted);margin:0}
+.history .readout{font-size:clamp(34px,4vw,48px);margin:12px 0 6px}
+.chart-wrap{position:relative;margin-top:26px;height:220px;padding-right:52px;touch-action:pan-y}
+.history-graph{display:block;width:100%;height:100%;overflow:visible}
+.ylabel{position:absolute;right:0;transform:translateY(-50%);font:10px var(--mono);color:var(--faint)}
+.crosshair{position:absolute;top:0;bottom:0;width:1px;background:var(--muted);opacity:0;pointer-events:none}
+.chart-dot{position:absolute;width:7px;height:7px;background:var(--ink);transform:translate(-50%,-50%);opacity:0;pointer-events:none}
+.tip{position:absolute;top:0;transform:translate(-50%,calc(-100% - 8px));padding:5px 8px;border-radius:5px;background:var(--raise-2);border:1px solid var(--line-2);font:11.5px var(--mono);white-space:nowrap;opacity:0;pointer-events:none}
+.tip span{color:var(--muted);margin-right:8px}
+.chart-wrap.hovering .crosshair,.chart-wrap.hovering .chart-dot,.chart-wrap.hovering .tip{opacity:1}
+.axis{display:flex;justify-content:space-between;font:10.5px var(--mono);color:var(--faint);margin-top:10px;padding-right:52px}
+.rank{display:grid;grid-template-columns:minmax(0,1fr) 64px 64px;align-items:center;gap:14px;padding:7px 0;font-size:13px}
+.rank .bar{height:2px;background:var(--line-2)}
+.rank .bar b{display:block;height:100%;background:var(--cpu)}
+.rank time{text-align:right;font:12px var(--mono);color:var(--soft)}
+.ranks{margin-top:14px}
+
+/* Floating navigation island */
+.island{position:fixed;left:50%;bottom:44px;transform:translateX(-50%);z-index:40;display:flex;gap:2px;padding:4px;border-radius:999px;background:#1a1a18;border:1px solid var(--line-2);box-shadow:0 12px 32px rgba(0,0,0,.5);max-width:calc(100vw - 24px)}
+.island-pill{position:absolute;top:4px;left:0;height:36px;border-radius:999px;background:var(--tone,var(--ink));transition:transform .28s cubic-bezier(.3,.7,.2,1),width .28s cubic-bezier(.3,.7,.2,1);pointer-events:none}
+.island button{position:relative;z-index:1;display:flex;align-items:center;height:36px;padding:0 11px;border-radius:999px;color:var(--muted);transition:color .2s}
+.island button:hover{color:var(--ink)}
+.island button.selected{color:var(--bg)}
+.island button:focus-visible{outline-offset:-3px}
+.island .label{max-width:0;overflow:hidden;white-space:nowrap;font-size:13px;font-weight:500;transition:max-width .28s cubic-bezier(.3,.7,.2,1),margin .28s}
+.island button.selected .label{max-width:90px;margin-left:7px}
+
+/* Status bar */
+.statusbar{position:fixed;left:0;right:0;bottom:0;z-index:35;display:flex;justify-content:space-between;gap:16px;padding:7px var(--gutter);font:11px var(--mono);color:var(--muted);background:var(--bg);border-top:1px solid var(--line)}
+.statusbar button{font:11px var(--mono);color:var(--muted);margin-left:12px}
+.statusbar button:hover{color:var(--ink)}
+
+/* Sheets */
+dialog{width:min(540px,calc(100vw - 32px));max-height:calc(100vh - 48px);padding:0;border-radius:12px;color:var(--ink);background:var(--raise);border:1px solid var(--line-2);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+dialog[open]{animation:sheet-in .16s ease-out}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+@keyframes sheet-in{from{opacity:0;transform:translateY(6px)}}
+.sheet-inner{padding:22px 24px 20px}
+.sheet-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.sheet-head h2{font-size:18px}
+.sheet-kicker{font:11px var(--mono);color:var(--muted);margin:3px 0 0}
+dialog p{font-size:13.5px;color:var(--soft);line-height:1.65}
+dialog .muted{color:var(--muted);font-size:12.5px}
+dialog table{width:100%;font-size:13px;border-collapse:collapse;margin:16px 0}
+dialog th{text-align:left;font-size:12px;font-weight:500;color:var(--muted);padding:0 0 8px;border-bottom:1px solid var(--line-2)}
+dialog td{padding:9px 0;border-bottom:1px solid var(--line)}
+dialog td:not(:first-child),dialog th:not(:first-child){text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.sheet-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.sheet-readout{display:flex;align-items:center;gap:16px}
+.sheet-readout .readout{font-size:48px;margin:18px 0 12px}
+.sheet-chart{position:relative;height:120px;margin:18px 0 4px}
+.sheet-chart svg{display:block;width:100%;height:100%;overflow:visible}
+.search{width:100%;height:36px;padding:0 12px;border-radius:6px;background:var(--bg);border:1px solid var(--line-2);font-size:13.5px;margin-top:16px}
+.search::placeholder{color:var(--muted)}
+
+/* Loading preview */
+.skeleton .readout,.skeleton .readings dd,.skeleton .scale{color:transparent;background:var(--raise-2);border-radius:3px;animation:breathe 1s ease-in-out infinite alternate}
+.skeleton .readout .u{visibility:hidden}
+.skeleton .spark,.skeleton .ruler .fill{visibility:hidden}
+@keyframes breathe{to{opacity:.45}}
+
+@media (max-width:1180px){
+  .channels{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .channel:nth-child(n+4){border-top:1px solid var(--line)}
+  .channel:nth-child(3n+1){border-left:0;padding-left:0;padding-right:20px}
+  .channel:nth-child(3n+2){border-left:1px solid var(--line);padding-left:20px;padding-right:20px}
+  .channel:nth-child(3n){border-left:1px solid var(--line);padding-left:20px;padding-right:0}
+  .notice{grid-template-columns:7px 84px minmax(0,1fr) auto}
+  .notice .time{display:none}
+}
+@media (max-width:900px){
+  .breakdowns,.history{grid-template-columns:1fr}
+  .bd,.bd:nth-child(2n){padding:22px 0 24px;border-left:0}
+  .history>article:first-child{padding-right:0}
+  .history>article+article{padding-left:0;border-left:0;border-top:1px solid var(--line)}
+  .hardware{grid-template-columns:1fr}
+  .hw,.hw:first-child,.hw:last-child{padding:20px 0 22px;border-left:0}
+  .hw+.hw{border-top:1px solid var(--line)}
+}
+@media (max-width:720px){
+  .top-meta{display:none}
+  .intro{grid-template-columns:1fr;padding-top:28px}
+  .channels{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .channel:nth-child(n+3){border-top:1px solid var(--line)}
+  .channel:nth-child(2n+1){border-left:0;padding-left:0;padding-right:16px}
+  .channel:nth-child(2n){border-left:1px solid var(--line);padding-left:16px;padding-right:0}
+  .notice{grid-template-columns:7px minmax(0,1fr) auto;gap:4px 14px}
+  .notice .cat{grid-column:2;grid-row:1}
+  .notice .copy{grid-column:2}
+  .notice .inspect{grid-column:3;grid-row:1/3;align-self:center}
+  .notice .led{grid-row:1}
+  .statusbar .legal{display:none}
+}
+@media (max-width:480px){
+  .bd-body{flex-direction:column;align-items:stretch;gap:18px}
+  .donut{align-self:flex-start}
+  .island button{padding:0 9px}
+  .island .label{display:none}
+  .build-link{font-size:12px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="#top" aria-label="Gauge overview"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.755 6.443A8 8 0 1 0 20 12"/><path d="M12 12h8" stroke="#ff6b2c"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg>Gauge</a>
+  <span class="top-meta">Sample session</span>
+  <a class="build-link" href="building.html">Building Gauge ↗</a>
+  <button class="icon-btn settings" aria-label="Preview settings"></button>
+</header>
+
+<main id="top">
+  <section class="intro">
+    <div>
+      <h1>Overview</h1>
+      <p class="machine">Apple silicon · 10 cores · 16 GB</p>
+    </div>
+    <div class="controls">
+      <div class="seg icons" id="chart-mode" role="group" aria-label="Chart style"><button aria-label="Bar charts"></button><button class="active" aria-label="Line charts"></button></div>
+      <button class="btn export"></button>
+    </div>
+    <p class="status"><span><i class="led on" aria-hidden="true"></i>Memory pressure elevated</span><span><i class="led" aria-hidden="true"></i>5 readings normal</span></p>
+  </section>
+
+  <section class="section first" aria-labelledby="vitals-title">
+    <div class="sec-head"><h2 id="vitals-title">Vitals</h2></div>
+    <div class="channels"></div>
+  </section>
+
+  <section class="section" aria-labelledby="notes-title">
+    <div class="sec-head"><h2 id="notes-title">Worth a look <span class="count" id="notice-count">2</span></h2><div class="controls"><button class="textbtn" id="show-all">Show all 2</button><button class="textbtn" id="clear">Clear</button></div></div>
+    <div class="notices"></div>
+  </section>
+
+  <section class="section" aria-labelledby="now-title">
+    <div class="sec-head"><h2 id="now-title">Right now</h2><button class="btn" id="processes">View processes</button></div>
+    <div class="breakdowns"></div>
+  </section>
+
+  <section class="section" aria-labelledby="hw-title">
+    <div class="sec-head"><h2 id="hw-title">Hardware</h2></div>
+    <div class="hardware"></div>
+  </section>
+
+  <section class="section" aria-labelledby="time-title">
+    <div class="sec-head"><h2 id="time-title">Over time</h2><div class="controls"><div class="seg" id="history-tabs" role="group" aria-label="History metric"><button class="active">CPU</button><button>Memory</button><button>Network</button></div><select id="period" aria-label="History period"><option>12 hours</option><option>6 hours</option><option>1 hour</option></select></div></div>
+    <div class="history"></div>
+  </section>
+</main>
+
+<nav class="island" aria-label="System categories"></nav>
+
+<footer class="statusbar"><span>32 apps · 617 processes<span class="legal"> · <button id="privacy">Privacy</button><button id="terms">Terms</button></span></span><span>Sample data · Design preview</span></footer>
+
+<dialog aria-labelledby="sheet-title"><div class="sheet-inner"><div class="sheet-head"><div><h2 id="sheet-title"></h2><p class="sheet-kicker" id="sheet-kicker"></p></div><button class="icon-btn" id="sheet-x" aria-label="Close"></button></div><div class="body"></div><div class="sheet-foot"><button class="btn primary" id="close">Done</button></div></div></dialog>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const INK='#edece6',SIGNAL='#ff6b2c';
+// Each metric's own flat colour; signal orange stays reserved for readings that need attention.
+const TONES={CPU:'#5aa7ff',Memory:'#b08cff',GPU:'#ff7eb6',Disk:'#e9be55',Network:'#3fd0a8',Battery:'#9bd25b',Projects:'#c9c8c0',Overview:INK};
+const rgba=(hex,a)=>`rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},${a})`;
+
+const icons={Overview:'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',CPU:'M6 6h12v12H6z M9 9h6v6H9z M9 2v4 M15 2v4 M9 18v4 M15 18v4 M2 9h4 M2 15h4 M18 9h4 M18 15h4',Memory:'M3 7h18v10H3z M6 10v4 M10 10v4 M14 10v4 M18 10v4 M6 17v3 M10 17v3 M14 17v3 M18 17v3',Disk:'M6 4h12l3 10v6H3v-6z M3 14h18 M15 17h3',Network:'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20 M2 12h20 M12 2c-6 5-6 15 0 20 M12 2c6 5 6 15 0 20',GPU:'M12 3 2 8l10 5 10-5z M2 12l10 5 10-5 M2 16l10 5 10-5',Battery:'M2 7h17v10H2z M22 10v4 M5 10h9v4H5z',Projects:'M3 6h7l2 3h9v11H3z',Settings:'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8 M12 2v3 M12 19v3 M2 12h3 M19 12h3 M5 5l2 2 M17 17l2 2 M5 19l2-2 M17 7l2-2',Line:'M3 3v18h18 M6 15l4-5 5 3 5-7',Bars:'M5 20V12h3v8z M11 20V7h3v13z M17 20V3h3v17z',Export:'M12 15V2 M8 6l4-4 4 4 M5 10H3v12h18V10h-2',Next:'M5 12h14 M13 6l6 6-6 6',Chevron:'M9 6l6 6-6 6',Close:'M6 6l12 12 M18 6 6 18'};
+const icon=n=>`<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="${icons[n]||icons.CPU}"/></svg>`;
+
+const metrics=[
+  {name:'CPU',caption:'Now',value:'24',unit:'%',stats:[['User','18%'],['System','6%'],['Average today','17%']],level:22,pct:24,scale:['0','100%']},
+  {name:'Memory',caption:'In use of 16 GB',value:'12.99',unit:'GB',stats:[['App','3.81 GB'],['Wired','2.77 GB'],['Compressed','6.4 GB']],level:76,pct:81,scale:['0','16 GB'],flag:'Elevated'},
+  {name:'GPU',caption:'Apple silicon',value:'17',unit:'%',stats:[['Memory','648.5 MB'],['Average','16%'],['Peak','40%']],level:17,pct:17,scale:['0','100%']},
+  {name:'Disk',caption:'Free of 994.61 GB',value:'722.82',unit:'GB',stats:[['Reading','7.1 MB/s'],['Writing','177 kB/s'],['Written today','73.39 GB']],level:12,pct:73,scale:['0','994.61 GB']},
+  {name:'Network',caption:'Downloading',value:'26',unit:'kB/s',stats:[['Uploading','102 kB/s'],['Today','28.14 GB'],['Last 7 days','147.27 GB']],level:8,pct:3,scale:['0','1 MB/s']},
+  {name:'Battery',caption:'Charging',value:'78',unit:'%',stats:[['Until full','1h 29m'],['Power','22.0 W'],['Health','100%']],level:60,pct:78,scale:['0','100%']}
+];
+let bars=false,historyMetric='CPU';
+
+function values(n,level,seed=0){return Array.from({length:n},(_,i)=>Math.max(2,Math.min(95,level+Math.sin(i*.45+seed)*2+Math.cos(i*1.5)*1.4+(i>33&&i<42?Math.sin(i*1.3)*11:0))))}
+function graph(data,w,h,color,grid=false){
+  const y=v=>(h-v*h/100).toFixed(1);
+  const lines=grid?[0,25,50,75].map(v=>`<line x1="0" x2="${w}" y1="${y(v)}" y2="${y(v)}" stroke="${v?'#262624':'#363632'}" stroke-width="1" vector-effect="non-scaling-stroke"/>`).join(''):`<line x1="0" x2="${w}" y1="${h}" y2="${h}" stroke="#262624" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
+  if(bars){const bw=w/data.length;return lines+data.map((v,i)=>`<rect x="${(i*bw+bw*.18).toFixed(1)}" y="${y(v)}" width="${(bw*.64).toFixed(1)}" height="${(v*h/100).toFixed(1)}" fill="${color}" opacity=".7"/>`).join('')}
+  const pts=data.map((v,i)=>`${(i*w/(data.length-1)).toFixed(1)},${y(v)}`).join(' ');
+  return `${lines}<polygon points="0,${h} ${pts} ${w},${h}" fill="${color}" opacity=".05"/><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.25" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`;
+}
+function ruler(pct){
+  const ticks=Array.from({length:21},(_,i)=>{const x=i*10,major=i%10===0,mid=i%5===0;return `<line class="tick" x1="${x}" x2="${x}" y1="8" y2="${major?14:mid?12.5:11}" vector-effect="non-scaling-stroke"/>`}).join('');
+  return `<svg class="ruler" viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true"><rect class="track" x="0" y="2" width="200" height="3"/><rect class="fill" x="0" y="2" width="${pct*2}" height="3"/>${ticks}</svg>`;
+}
+
+/* Vitals */
+function drawChannels(){
+  $('.channels').innerHTML=metrics.map((m,i)=>{const color=m.flag?SIGNAL:TONES[m.name];return `<article class="channel${m.flag?' flagged':''}" style="--tone:${TONES[m.name]}" tabindex="0" role="button" aria-label="Inspect ${m.name}${m.flag?', '+m.flag.toLowerCase():''}" data-metric="${m.name}"><div class="ch-head"><span class="dot"></span><span class="ch-name">${m.name}</span>${m.flag?`<span class="flag">${m.flag}</span>`:''}<span class="chev">${icon('Chevron')}</span></div><div class="ch-cap">${m.caption}</div><div class="readout">${m.value}<span class="u">${m.unit}</span></div>${ruler(m.pct)}<div class="scale"><span>${m.scale[0]}</span><span>${m.scale[1]}</span></div><svg class="spark" viewBox="0 0 400 38" preserveAspectRatio="none" role="img" aria-label="Sample ${m.name} history">${graph(values(58,m.level,i),400,38,color)}</svg><dl class="readings">${m.stats.map(s=>`<div><dt>${s[0]}</dt><dd>${s[1]}</dd></div>`).join('')}</dl></article>`}).join('');
+  $$('.channel').forEach(el=>{
+    el.onclick=()=>inspect(el.dataset.metric);
+    el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();inspect(el.dataset.metric)}};
+  });
+}
+
+/* Sheets */
+const dialog=$('dialog');
+function modal(title,body,{kicker='Sample session',tab}={}){
+  $('#sheet-title').textContent=title;
+  $('#sheet-kicker').textContent=kicker;
+  $('.body',dialog).innerHTML=body;
+  setTab(tab||'Overview');
+  dialog.showModal();
+}
+dialog.addEventListener('close',()=>setTab('Overview'));
+dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});
+function inspect(name){
+  if(name==='Projects'){showProjects();return}
+  const m=metrics.find(m=>m.name===name);
+  if(!m){showProcesses();return}
+  const color=m.flag?SIGNAL:TONES[name];
+  modal(name,`<div class="sheet-readout" style="--tone:${TONES[name]}"><div class="readout">${m.value}<span class="u">${m.unit}</span></div>${m.flag?`<span class="flag">${m.flag}</span>`:''}</div><div class="${m.flag?'flagged':''}" style="--tone:${TONES[name]}">${ruler(m.pct)}</div><div class="scale"><span>${m.scale[0]}</span><span>${m.scale[1]}</span></div><div class="sheet-chart"><svg viewBox="0 0 400 120" preserveAspectRatio="none" role="img" aria-label="Sample ${m.name} history">${graph(values(58,m.level),400,120,color,true)}</svg></div><table>${m.stats.map(s=>`<tr><td>${s[0]}</td><td>${s[1]}</td></tr>`).join('')}</table><p class="muted">Sample readings for this design preview.</p>`,{kicker:`${m.caption} · sample data`,tab:name});
+}
+const processes=[['macOS','47.1%','4.74 GB'],['ChatGPT','13.9%','3.87 GB'],['Google Chrome','20.1%','3.54 GB'],['Node.js','46.3%','3.18 GB'],['Java','8.2%','1.84 GB']];
+function showProcesses(){
+  modal('Processes','<input class="search" type="search" placeholder="Find a process" aria-label="Find a process"><table><thead><tr><th>App</th><th>CPU</th><th>Memory</th></tr></thead><tbody id="process-table"></tbody></table><p class="muted">CPU percentages are per core. App memory includes virtual allocations and can exceed physical memory.</p>',{kicker:'Right now · sample data'});
+  const render=q=>$('#process-table').innerHTML=processes.filter(a=>a[0].toLowerCase().includes(q.toLowerCase())).map(a=>`<tr>${a.map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')||'<tr><td colspan="3">No matching processes.</td></tr>';
+  render('');
+  $('.search').oninput=e=>render(e.target.value);
+}
+function showProjects(){
+  modal('Projects','<p>Two local dev servers are running but idle. Together they use 230.8 MB.</p><table><thead><tr><th>Server</th><th>Port</th><th>State</th></tr></thead><tbody><tr><td>Local web app</td><td>3000</td><td>Idle</td></tr><tr><td>API</td><td>8787</td><td>Idle</td></tr></tbody></table><p class="muted">Gauge does not detect or stop servers in this preview.</p>',{kicker:'Sample data',tab:'Projects'});
+}
+
+/* Worth a look */
+const notices=[
+  {tag:'Projects',title:'Two dev servers are running but idle',body:'Local web app and API. Together they use 230.8 MB on ports 3000 and 8787.',on:false},
+  {tag:'Memory',title:'Memory pressure is elevated',body:'The biggest users are macOS, 4.6 GB, and Google Chrome, 3.53 GB.',on:true}
+];
+function drawNotices(){
+  $('.notices').innerHTML=notices.map(n=>`<div class="notice" style="--tone:${TONES[n.tag]}"><i class="led${n.on?' on':''}" aria-hidden="true"></i><span class="cat">${n.tag}</span><div class="copy"><h3>${n.title}</h3><p>${n.body}</p></div><span class="time">Sample session</span><button class="inspect" aria-label="Inspect ${n.tag} notice" data-notice="${n.tag}">Inspect${icon('Next')}</button></div>`).join('');
+  $$('[data-notice]').forEach(b=>b.onclick=()=>inspect(b.dataset.notice));
+  $('#show-all').textContent='Show all 2';
+  $('#notice-count').textContent='2';
+}
+
+/* Right now */
+const RAMP=[1,.74,.52,.36,.24,.15];
+function donut(items,label,sub){
+  let offset=0;
+  return `<div class="donut"><svg viewBox="0 0 132 132" aria-hidden="true"><circle cx="66" cy="66" r="57" stroke="#1e1e1c"/>${items.map(x=>{const len=Math.max(.3,x[2]-.8),v=`<circle cx="66" cy="66" r="57" pathLength="100" stroke="${x[3]}" stroke-dasharray="${len} ${100-len}" stroke-dashoffset="${-offset}"/>`;offset+=x[2];return v}).join('')}</svg><div class="donut-label">${label}<small>${sub}</small></div></div>`;
+}
+// Tonal steps of the metric colour by rank; the signal colour marks only the segment behind the memory warning.
+const shade=(metric,rows,hot)=>rows.map((r,i)=>[...r,r[0]===hot?SIGNAL:rgba(TONES[metric],RAMP[Math.min(i,RAMP.length-1)])]);
+const breakdowns=[
+  ['Memory by type','81% in use','81%','in use',shade('Memory',[['App','3.92 GB',24],['Wired','2.73 GB',17],['Compressed','6.39 GB',40],['Cached','2.06 GB',13],['Free','923.7 MB',6]],'Compressed')],
+  ['Memory by app','all apps','23.41','GB',shade('Memory',[['macOS','4.74 GB',20],['ChatGPT','3.87 GB',17],['Google Chrome','3.54 GB',15],['Node.js','3.18 GB',14],['Java','1.84 GB',8],['Other','6.25 GB',26]])],
+  ['CPU by app','24% in use','24%','in use',shade('CPU',[['Gauge','61.2%',31],['macOS','47.1%',24],['Node.js','46.3%',23],['Google Chrome','20.1%',10],['Other','23.4%',12]])],
+  ['Power by app','all apps','2.4','W',shade('Battery',[['Gauge','2.1 W',84],['macOS','119 mW',5],['Node.js','110 mW',5],['Fieldscope','32 mW',2],['Other','39 mW',4]])]
+];
+$('.breakdowns').innerHTML=breakdowns.map(d=>`<article class="bd"><h3 class="bd-title"><span class="dot" style="--tone:${TONES[d[0].startsWith('Memory')?'Memory':d[0].startsWith('CPU')?'CPU':'Battery']}"></span>${d[0]}<span>${d[1]}</span></h3><div class="bd-body">${donut(d[4],d[2],d[3])}<table class="legend">${d[4].map(l=>`<tr><td><i style="background:${l[3]}"></i>${l[0]}</td><td>${l[1]}</td><td>${l[2]}%</td></tr>`).join('')}</table></div></article>`).join('');
+
+/* Hardware */
+$('.hardware').innerHTML=`
+  <article class="hw"><h3><span class="dot" style="--tone:var(--disk)"></span>Temperature &amp; fans</h3><dl class="readings"><div><dt>CPU</dt><dd>46 °C</dd></div><div><dt>GPU</dt><dd>44 °C</dd></div><div><dt>Hottest sensor</dt><dd>47 °C</dd></div><div><dt>Fan</dt><dd>1,200 rpm</dd></div></dl><p>Fan speed is steady.</p></article>
+  <article class="hw"><h3><span class="dot" style="--tone:var(--gpu)"></span>Audio activity</h3><dl class="readings"><div><dt>Playing</dt><dd>Nothing</dd></div><div><dt>Open sessions</dt><dd>10 apps</dd></div></dl><button class="textbtn" id="audio">View audio sessions${icon('Next')}</button></article>
+  <article class="hw"><h3><span class="dot" style="--tone:var(--cpu)"></span>Bluetooth batteries</h3><dl class="readings"><div><dt>Accessories</dt><dd>None</dd></div></dl><p>No accessories in this sample session. Connected keyboards, mice and headphones appear here.</p></article>`;
+
+/* Over time */
+const periods={'12 hours':{n:110,start:10,span:12},'6 hours':{n:70,start:16,span:6},'1 hour':{n:40,start:21,span:1}};
+const historyInfo={
+  CPU:{title:'Average CPU load',value:'16',unit:'%',level:35,format:v=>Math.round(v)+'%',grid:['25%','50%','75%']},
+  Memory:{title:'Memory used',value:'12.99',unit:'GB',level:76,format:v=>(v*.16).toFixed(2)+' GB',grid:['4 GB','8 GB','12 GB']},
+  Network:{title:'Download rate',value:'26',unit:'kB/s',level:35,format:v=>Math.round(v*.8)+' kB/s',grid:['20 kB/s','40 kB/s','60 kB/s']}
+};
+function drawHistory(){
+  const info=historyInfo[historyMetric],period=$('#period').value,p=periods[period];
+  const data=values(p.n,info.level).map((v,i)=>i>p.n*.7?Math.min(98,Math.max(8,v+Math.sin(i)*22)):v);
+  const clock=i=>{const mins=Math.round(p.start*60+i/(p.n-1)*p.span*60);return String(Math.floor(mins/60)%24).padStart(2,'0')+':'+String(mins%60).padStart(2,'0')};
+  const axis=[0,.25,.5,.75,1].map(f=>`<span>${clock(f*(p.n-1))}</span>`).join('');
+  const ylabels=info.grid.map((l,i)=>`<span class="ylabel" style="top:${75-i*25}%">${l}</span>`).join('');
+  $('.history').innerHTML=`<article><p class="h-meta">${info.title}</p><div class="readout">${info.value}<span class="u">${info.unit}</span></div><p class="h-meta mono" style="font-size:11px">${period} · sample history</p><div class="chart-wrap"><svg class="history-graph" viewBox="0 0 700 220" preserveAspectRatio="none" role="img" aria-label="${historyMetric} over ${period}">${graph(data,700,220,TONES[historyMetric],true)}</svg>${ylabels}<span class="crosshair"></span><span class="chart-dot"></span><span class="tip"></span></div><div class="axis">${axis}</div></article><article><p class="h-meta">Top apps by CPU time</p><div class="ranks">${[['Gauge','10h 18m',95],['macOS','6h 37m',65],['Google Chrome','3h 10m',35],['Node.js','2h 47m',29],['ChatGPT','42m 13s',12],['Java','33m 39s',9]].map(a=>`<div class="rank"><span>${a[0]}</span><span class="bar"><b style="width:${a[2]}%"></b></span><time>${a[1]}</time></div>`).join('')}</div></article>`;
+  const wrap=$('.chart-wrap'),cross=$('.crosshair',wrap),dot=$('.chart-dot',wrap),tip=$('.tip',wrap);
+  const svg=$('svg',wrap);
+  const show=e=>{const r=svg.getBoundingClientRect(),i=Math.max(0,Math.min(p.n-1,Math.round((e.clientX-r.left)/r.width*(p.n-1)))),x=i/(p.n-1)*r.width,v=data[i];cross.style.left=x+'px';dot.style.left=x+'px';dot.style.top=(100-v)+'%';tip.style.left=Math.max(56,Math.min(r.width-56,x))+'px';tip.innerHTML=`<span>${clock(i)}</span>${info.format(v)}`;wrap.classList.add('hovering')};
+  wrap.onpointermove=show;wrap.onpointerdown=show;
+  wrap.onpointerleave=()=>wrap.classList.remove('hovering');
+}
+
+/* Floating navigation island */
+const island=$('.island'),tabNames=['Overview','CPU','Memory','Disk','Network','GPU','Battery','Projects'];
+island.innerHTML='<span class="island-pill" aria-hidden="true"></span>'+tabNames.map(n=>`<button type="button" data-tab="${n}" aria-label="${n}" title="${n}">${icon(n)}<span class="label" aria-hidden="true">${n}</span></button>`).join('');
+const pill=$('.island-pill');
+function placePill(){const b=$('.selected',island);if(!b)return;pill.style.width=b.offsetWidth+'px';pill.style.transform=`translateX(${b.offsetLeft}px)`}
+function setTab(name){
+  $$('button',island).forEach(b=>{const on=b.dataset.tab===name;b.classList.toggle('selected',on);on?b.setAttribute('aria-current','true'):b.removeAttribute('aria-current')});
+  island.style.setProperty('--tone',TONES[name]||INK);
+  placePill();
+}
+const pillObserver=new ResizeObserver(placePill);
+$$('button',island).forEach(b=>{
+  pillObserver.observe(b);
+  b.onclick=()=>b.dataset.tab==='Overview'?(setTab('Overview'),window.scrollTo({top:0,behavior:reduceMotion?'auto':'smooth'})):inspect(b.dataset.tab);
+});
+island.onkeydown=e=>{
+  const buttons=$$('button',island),i=buttons.indexOf(document.activeElement);
+  if(i<0)return;
+  const next={ArrowRight:i+1,ArrowLeft:i-1,Home:0,End:buttons.length-1}[e.key];
+  if(next===undefined)return;
+  e.preventDefault();
+  buttons[(next+buttons.length)%buttons.length].focus();
+};
+setTab('Overview');
+
+/* Controls */
+$('.settings').innerHTML=icon('Settings');
+$('#sheet-x').innerHTML=icon('Close');
+$('.settings').onclick=()=>{
+  modal('Design preview','<p>This preview explores the visual direction for Gauge. All readings are sample data. No system monitoring or background collection is running.</p><button class="btn" id="loading">Preview loading state</button>',{kicker:'Settings'});
+  $('#loading').onclick=()=>{dialog.close();window.scrollTo(0,0);const c=$('.channels');c.classList.add('skeleton');setTimeout(()=>c.classList.remove('skeleton'),1400)};
+};
+$$('#chart-mode button').forEach((b,i)=>{b.innerHTML=icon(i?'Line':'Bars');b.onclick=()=>{bars=!i;$$('#chart-mode button').forEach(x=>x.classList.toggle('active',x===b));drawChannels();drawHistory()}});
+$$('#history-tabs button').forEach(b=>b.onclick=()=>{historyMetric=b.textContent;$$('#history-tabs button').forEach(x=>x.classList.toggle('active',x===b));drawHistory()});
+$('#period').onchange=drawHistory;
+$('.export').innerHTML=icon('Export')+'Export';
+$('.export').onclick=()=>{const url=URL.createObjectURL(new Blob(['Metric,Value,Unit\n'+metrics.map(m=>[m.name,m.value,m.unit].join(',')).join('\n')],{type:'text/csv'})),a=document.createElement('a');a.href=url;a.download='gauge-sample-metrics.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+$('#close').onclick=()=>dialog.close();
+$('#sheet-x').onclick=()=>dialog.close();
+$('#processes').onclick=showProcesses;
+$('#show-all').onclick=drawNotices;
+$('#clear').onclick=()=>{$('.notices').innerHTML='<div class="empty">No notices. <button class="textbtn" id="restore">Restore sample notices</button></div>';$('#show-all').textContent='Show all 0';$('#notice-count').textContent='0';$('#restore').onclick=drawNotices};
+$('#audio').onclick=()=>modal('Audio sessions','<p>No audio is playing in this sample session.</p><table><thead><tr><th>App</th><th>State</th></tr></thead><tbody><tr><td>Google Chrome</td><td>Idle</td></tr><tr><td>Safari</td><td>Idle</td></tr><tr><td>Music</td><td>Idle</td></tr></tbody></table>',{kicker:'Hardware · sample data'});
+$('#privacy').onclick=()=>modal('Privacy','<p>This local prototype uses sample data. It does not read system metrics, collect personal information, set cookies, or send analytics. Exported files contain sample data only.</p>',{kicker:'Gauge'});
+$('#terms').onclick=()=>modal('Terms of use','<p>This unfinished prototype is provided for design evaluation. Sample readings cannot be used to diagnose your computer. No account or monitoring service is provided.</p>',{kicker:'Gauge'});
+
+// The progress kit is local-only; hide its link where the page isn't present (such as the public repo).
+const dropKitLink=()=>{$('.build-link')?.remove();$('.settings').style.marginLeft='auto'};
+fetch('building.html',{method:'HEAD'}).then(r=>{if(!r.ok)dropKitLink()}).catch(dropKitLink);
+
+drawChannels();drawNotices();drawHistory();
+</script>
+</body>
+</html>
