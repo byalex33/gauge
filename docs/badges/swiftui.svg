@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="147" height="24" role="img" aria-label="UI: SwiftUI + Charts">
+<title>UI: SwiftUI + Charts</title>
+<clipPath id="r"><rect width="147" height="24" rx="5"/></clipPath>
+<g clip-path="url(#r)"><rect width="33" height="24" fill="#1e1e1c"/><rect x="33" width="114" height="24" fill="#5aa7ff"/></g>
+<rect x=".5" y=".5" width="146" height="23" rx="4.5" fill="none" stroke="#363632"/>
+<g font-family="-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif" font-size="11.5" font-weight="600" text-anchor="middle">
+<text x="16.5" y="16" fill="#bdbcb4">UI</text><text x="90.0" y="16" fill="#ffffff">SwiftUI + Charts</text></g>
+</svg>

@@ -7,12 +7,12 @@
 **A precise, private system monitor for macOS.**<br>
 Native SwiftUI. Live readings. History stays on your Mac.
 
-[![macOS 26+](https://img.shields.io/badge/macOS-26%2B-0f0f0e?style=flat-square&logo=apple&logoColor=edece6)](#build-from-source)
-[![Swift 6.2](https://img.shields.io/badge/Swift-6.2-f05138?style=flat-square&logo=swift&logoColor=white)](https://swift.org)
-[![SwiftUI](https://img.shields.io/badge/UI-SwiftUI%20%2B%20Swift%20Charts-5aa7ff?style=flat-square)](app/Sources/Gauge)
-[![Local only](https://img.shields.io/badge/history-stays%20on%20your%20Mac-3fd0a8?style=flat-square)](#history-stays-on-your-mac)
-[![No network](https://img.shields.io/badge/network%20calls-none-9bd25b?style=flat-square)](#history-stays-on-your-mac)
-[![MIT](https://img.shields.io/badge/license-MIT-b08cff?style=flat-square)](LICENSE)
+<a href="#build-from-source"><img src="docs/badges/macos.svg" alt="macOS 26+"></a>
+<a href="https://swift.org"><img src="docs/badges/swift.svg" alt="Swift 6.2"></a>
+<a href="app/Sources/Gauge"><img src="docs/badges/swiftui.svg" alt="SwiftUI and Swift Charts"></a>
+<a href="#history-stays-on-your-mac"><img src="docs/badges/local.svg" alt="History stays on your Mac"></a>
+<a href="#history-stays-on-your-mac"><img src="docs/badges/network.svg" alt="No network calls"></a>
+<a href="LICENSE"><img src="docs/badges/license.svg" alt="MIT license"></a>
 
 [Features](#features) · [Screenshots](#a-closer-look) · [What it measures](#what-it-measures) · [Privacy](#history-stays-on-your-mac) · [Build](#build-from-source) · [Roadmap](#roadmap)
 
